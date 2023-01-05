@@ -1,0 +1,58 @@
+import toast from 'react-hot-toast'
+import i18n from '../lib/i18n'
+
+
+export const handleError = (error, show) => {
+  if(error?.message == 'Invalid session token'){localStorage.clear(); return window.location.reload()}
+  if(typeof error == 'object')  error = JSON?.parse(JSON?.stringify(error))
+  if(error?.message)  error = error.message
+  if(typeof error == 'string'){
+    if(error?.startsWith('ParseError: 100') || error?.startsWith('XMLHttpRequest failed:')) error = i18n.t('ERROR.SERVER_INACTIVE_ERROR')
+    if(error?.startsWith('ParseError: ')) error = error.substr(15)
+  }else{
+    error = i18n.t('ERROR.SOMETHING_WENT_WRONG')
+  }
+  if(show) toast.error(<div dangerouslySetInnerHTML={{__html: `${error}`}}></div>)
+  return error
+}
+
+
+// date to string
+
+export const dateToString = (date) => {
+  date = new Date(date)
+  date = `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`
+  return date
+}
+
+
+// debounce
+
+export const debounce = (callBack, delay = 800)  =>{
+  let timeout
+  return (...args) => {
+    clearTimeout(timeout)
+    timeout = setTimeout(() => {
+      callBack(...args)
+    }, delay)
+  }
+}
+
+// convertstring to short form  eg: ankit malviya = am
+export const convertStringtToShortForm = (name = '') => {
+  let shortForm = ''
+  name.split(' ').map(item => shortForm += item?.charAt(0) || '')
+  return shortForm
+}
+
+
+// convert html to text
+
+export const convertHtmlToText = (html) => {
+  var tempDivElement = document.createElement("div")
+  tempDivElement.innerHTML = html
+  return tempDivElement.textContent || tempDivElement.innerText || ""
+}
+
+
+export const isObjectEmpty = (value) => Object.prototype.toString.call(value) === '[object Object]' && JSON.stringify(value) === '{}'
